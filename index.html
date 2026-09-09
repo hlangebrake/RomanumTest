@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#182329">
+  <meta name="description" content="Das Forum Romanum in der Ich-Perspektive erkunden. Mit zwei Daumensticks für iPad und Tablet.">
+  <title>Forum Romanum · Rundgang</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./css/viewer.css">
+  <script type="importmap">{"imports":{"three":"./vendor/three.module.js","three/addons/":"./vendor/addons/"}}</script>
+</head>
+<body>
+  <main id="world" aria-label="Dreidimensionaler Rundgang durch das Forum Romanum"></main>
+  <header><div class="title"><span>ROMA</span><h1>Forum Romanum</h1></div><div class="actions"><button id="reset" disabled>↺ <span>Zum Start</span></button><button id="help" aria-expanded="false" aria-controls="instructions" aria-label="Steuerung anzeigen">?</button></div></header>
+  <aside id="instructions" hidden><strong>Dein Rundgang</strong><p>Links: vorwärts, rückwärts und seitwärts laufen. Je weiter du den Stick auslenkst, desto schneller gehst du.</p><p>Rechts: nach links, rechts, oben und unten schauen.</p><p>Am Computer: WASD zum Laufen, Pfeiltasten oder Ziehen im Bild zum Umschauen.</p><button id="close-help">Verstanden</button></aside>
+  <div id="loading" role="status"><div class="loader"></div><strong>Das Forum wird geladen</strong><span id="progress">Modell und Wege werden vorbereitet …</span><button id="retry" hidden>Erneut versuchen</button></div>
+  <div class="crosshair" aria-hidden="true"></div>
+  <div class="controls"><div class="control"><div id="move" class="stick" aria-label="Laufen: Stick in die gewünschte Richtung ziehen"><span class="axis horizontal"></span><span class="axis vertical"></span><span class="knob"></span></div><span class="caption">LAUFEN</span></div><div class="control"><div id="look" class="stick" aria-label="Umschauen: Stick in die gewünschte Richtung ziehen"><span class="axis horizontal"></span><span class="axis vertical"></span><span class="knob"></span></div><span class="caption">UMSCHAUEN</span></div></div>
+  <noscript>Bitte JavaScript aktivieren, um das Forum zu betrachten.</noscript>
+  <script type="module">import('./js/viewer.js').catch(error => { document.querySelector('#progress').textContent='Der Viewer konnte nicht gestartet werden. Bitte die Seite über einen Webserver öffnen und erneut laden.'; document.querySelector('.loader').hidden=true; const retry=document.querySelector('#retry');retry.hidden=false;retry.onclick=()=>location.reload();console.error(error); });</script>
+</body>
+</html>

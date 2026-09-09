@@ -1,0 +1,5 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';
+import {stickVector,displacement,canMove} from '../js/movement.js';
+test('Stick is continuous, radial and clamps outside its circle',()=>{assert.deepEqual(stickVector(0,0,40),{x:0,y:0});assert.ok(stickVector(20,0,40).x<stickVector(40,0,40).x);assert.equal(stickVector(400,0,40).x,1);assert.ok(Math.abs(Math.hypot(...Object.values(stickVector(80,80,40)))-1)<1e-12);});
+test('Forward follows heading without diagonal speed boost',()=>{assert.equal(displacement(0,-1,0,4,1).z,-4);assert.ok(Math.abs(displacement(0,-1,Math.PI/2,4,1).x+4)<1e-12);assert.ok(Math.abs(Math.hypot(...Object.values(displacement(1,-1,0,4,1)))-4)<1e-12);});
+test('Navigation rejects boundaries, blocked edges and large steps',()=>{const n={x0:0,z0:0,step:1,nx:2,nz:1,heights:[0,0],edges:[1,2]};assert.ok(canMove(n,0,0,1,0));assert.equal(canMove(n,0,0,-1,0),false);n.edges[1]=0;assert.equal(canMove(n,0,0,1,0),false);n.edges[1]=2;n.heights[1]=2;assert.equal(canMove(n,0,0,1,0),false);});
