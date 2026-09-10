@@ -1,0 +1,9 @@
+<!doctype html><html lang="de"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Q1–Q5 · Sichtprüfung</title><link rel="stylesheet" href="../css/viewer.css"><body>
+<div id="objective-text"></div><div id="objective-topic"></div><button id="journal">Journal <span id="journal-count"></span></button><button id="memory">Gedächtnis <span id="memory-count"></span></button>
+<dialog id="dialog"><button id="dialog-memory">◇</button><button id="close-dialog" aria-label="Schließen">×</button><div id="quest-topic"></div><aside id="memory-notice"><button id="memory-notice-open"><span id="memory-new-title"></span></button><button id="memory-notice-dismiss">×</button></aside><div id="dialog-content"></div></dialog>
+<script type="module">
+import {createQuest} from '../js/quest.js';import {SAVE_KEY,allTasks,freshState} from '../js/quest-data.js';
+const target=new URLSearchParams(location.search).get('task')||'sort-types',s=freshState();s.stage=allTasks.find(t=>t.id===target)?.chapter.match(/^q[67]$/)?'messages':'learn';s.claims=['Belegt','Nicht belegt','Nein'];s.memory=['auftrag'];
+for(const t of allTasks){if(t.id===target)break;if(t.cards)s.memory.push(...t.cards.filter(id=>!s.memory.includes(id)));s.solved[t.id]=true;s.answers[t.id]=t.type==='reflection'?'Wer hat die Übergabe gesehen?':t.type==='writing'?'Eigene Zusammenfassung':t.answer;if(t.type==='writing'){s.revealed[t.id]=true;s.review[t.id]=t.criteria.map(()=>true);}}
+const data=new Map([[SAVE_KEY,JSON.stringify(s)]]),q=createQuest({storage:{getItem:k=>data.get(k),setItem:(k,v)=>data.set(k,v)},pause(){},animate(){},restart(){}});q.open(q.target);if(new URLSearchParams(location.search).has('memory'))document.querySelector('#dialog-memory').click();
+</script></body></html>

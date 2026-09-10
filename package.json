@@ -1,1 +1,1 @@
-{"name":"forum-romanum-viewer","private":true,"type":"module","scripts":{"build":"node scripts/build.mjs","dev":"node scripts/serve.mjs","test":"node --test scripts/movement.test.mjs"}}
+{"name":"forum-romanum-viewer","private":true,"type":"module","scripts":{"build":"node scripts/build.mjs","dev":"node scripts/serve.mjs","test":"node --test scripts/*.test.mjs"}}

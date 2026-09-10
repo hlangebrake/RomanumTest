@@ -1,0 +1,24 @@
+{
+  "source": "ForumRomanum-cartoon.blend",
+  "origin": [
+    -76.0,
+    -2.0,
+    -50.0
+  ],
+  "spacing": 1.5,
+  "dimensions": [
+    128,
+    22,
+    81
+  ],
+  "size": [
+    190.5,
+    31.5,
+    120.0
+  ],
+  "samples": 24,
+  "rayDistance": 18,
+  "format": "R8, x-fastest / y / z",
+  "description": "Baked sky visibility of the full original scene, not a diffuse texture atlas.",
+  "seconds": 16.28
+}

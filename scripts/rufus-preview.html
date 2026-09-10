@@ -1,0 +1,7 @@
+<!doctype html><html lang="de"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>Rufus · Prüfung</title><link rel="stylesheet" href="../css/viewer.css"><body><dialog id="dialog" aria-label="Rufus"><div id="dialog-content"></div></dialog><script type="module">
+import {createRufus} from '../js/rufus.js';
+const dialog=document.querySelector('#dialog'),content=document.querySelector('#dialog-content');
+const node=(tag,text)=>{const e=document.createElement(tag);e.textContent=text;return e;};
+const q=createRufus({content,body(k,title,text){content.replaceChildren(node('p',k),node('h2',title));if(text)content.append(node('p',text));dialog.scrollTop=0;},unlock(){},close(){q.render();}});
+q.render();dialog.showModal();
+</script></body></html>

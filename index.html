@@ -1,23 +1,38 @@
 <!doctype html>
 <html lang="de">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#182329">
-  <meta name="description" content="Das Forum Romanum in der Ich-Perspektive erkunden. Mit zwei Daumensticks für iPad und Tablet.">
-  <title>Forum Romanum · Rundgang</title>
-  <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="./css/viewer.css">
-  <script type="importmap">{"imports":{"three":"./vendor/three.module.js","three/addons/":"./vendor/addons/"}}</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#24362f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="Ein Amt, viele Versprechen. Eine Spurensuche auf dem Forum Romanum.">
+<title>Forum · Ein Amt, viele Versprechen</title>
+<link rel="icon" href="./assets/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="./assets/apple-touch-icon.png">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="stylesheet" href="./css/viewer.css">
+<script type="importmap">{"imports":{"three":"./vendor/three.module.js","three/addons/":"./vendor/addons/"}}</script>
 </head>
 <body>
-  <main id="world" aria-label="Dreidimensionaler Rundgang durch das Forum Romanum"></main>
-  <header><div class="title"><span>ROMA</span><h1>Forum Romanum</h1></div><div class="actions"><button id="reset" disabled>↺ <span>Zum Start</span></button><button id="help" aria-expanded="false" aria-controls="instructions" aria-label="Steuerung anzeigen">?</button></div></header>
-  <aside id="instructions" hidden><strong>Dein Rundgang</strong><p>Links: vorwärts, rückwärts und seitwärts laufen. Je weiter du den Stick auslenkst, desto schneller gehst du.</p><p>Rechts: nach links, rechts, oben und unten schauen.</p><p>Am Computer: WASD zum Laufen, Pfeiltasten oder Ziehen im Bild zum Umschauen.</p><button id="close-help">Verstanden</button></aside>
-  <div id="loading" role="status"><div class="loader"></div><strong>Das Forum wird geladen</strong><span id="progress">Modell und Wege werden vorbereitet …</span><button id="retry" hidden>Erneut versuchen</button></div>
-  <div class="crosshair" aria-hidden="true"></div>
-  <div class="controls"><div class="control"><div id="move" class="stick" aria-label="Laufen: Stick in die gewünschte Richtung ziehen"><span class="axis horizontal"></span><span class="axis vertical"></span><span class="knob"></span></div><span class="caption">LAUFEN</span></div><div class="control"><div id="look" class="stick" aria-label="Umschauen: Stick in die gewünschte Richtung ziehen"><span class="axis horizontal"></span><span class="axis vertical"></span><span class="knob"></span></div><span class="caption">UMSCHAUEN</span></div></div>
-  <noscript>Bitte JavaScript aktivieren, um das Forum zu betrachten.</noscript>
-  <script type="module">import('./js/viewer.js').catch(error => { document.querySelector('#progress').textContent='Der Viewer konnte nicht gestartet werden. Bitte die Seite über einen Webserver öffnen und erneut laden.'; document.querySelector('.loader').hidden=true; const retry=document.querySelector('#retry');retry.hidden=false;retry.onclick=()=>location.reload();console.error(error); });</script>
+<main id="world" aria-label="Forum Romanum"></main>
+<header>
+ <div class="title"><span>ROMA · XVII</span><h1>Forum Romanum</h1></div>
+ <div class="actions"><button id="reset" disabled aria-label="Szenario neu beginnen" title="Szenario neu beginnen">↺</button><button id="fullscreen" aria-label="Vollbild" title="Vollbild">⛶</button><button id="memory" aria-label="Gedächtnis">◇ <span>Gedächtnis</span><b id="memory-count">0</b></button><button id="journal" disabled>▤ <span>Journal</span><b id="journal-count">0</b></button></div>
+</header>
+<div id="objective"><span id="direction-arrow" aria-hidden="true">↑</span><div><span id="objective-text">Untersuche die Lieferung</span><small id="objective-topic"></small><small id="objective-distance">Livia · Warenstand</small></div></div>
+
+<button id="interact" hidden>Mit Livia sprechen</button>
+<div id="loading" role="status"><div class="loader"></div><span class="eyebrow">EIN AMT, VIELE VERSPRECHEN</span><strong>Ein Morgen in Rom</strong><span id="progress">Das Forum erwacht …</span><button id="retry" hidden>Erneut versuchen</button></div>
+<div class="crosshair" aria-hidden="true"></div>
+<div class="controls"><div class="control"><div id="move" class="stick" aria-label="Laufen"><span class="axis horizontal"></span><span class="axis vertical"></span><span class="knob"></span></div><span class="caption">LAUFEN</span></div><div class="control"><div id="look" class="stick" aria-label="Umschauen"><span class="axis horizontal"></span><span class="axis vertical"></span><span class="knob"></span></div><span class="caption">BLICK</span></div></div>
+<dialog id="dialog" aria-label="Gespräch und Aufzeichnungen"><button id="dialog-memory" aria-label="Gedächtnis öffnen">◇</button><button id="close-dialog" aria-label="Schließen">×</button><div id="quest-topic" aria-label="Aktuelles Lateinthema"></div><aside id="memory-notice" hidden aria-label="Neuer Gedächtniseintrag"><button id="memory-notice-open"><span>◇ Neu im Gedächtnis</span><strong id="memory-new-title" role="status" aria-live="polite"></strong></button><button id="memory-notice-dismiss" aria-label="Hinweis ausblenden">×</button></aside><div id="dialog-content"></div></dialog>
+<noscript>Aktiviere JavaScript, um das Forum zu betreten.</noscript>
+<script type="module">import('./js/viewer.js').catch(error=>{document.querySelector('#progress').textContent='Das Forum konnte nicht geladen werden. Bitte versuche es erneut.';document.querySelector('.loader').hidden=true;const retry=document.querySelector('#retry');retry.hidden=false;retry.onclick=()=>location.reload();console.error(error);});</script>
 </body>
 </html>
+
+
+
+
+
