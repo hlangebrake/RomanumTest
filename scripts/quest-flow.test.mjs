@@ -95,3 +95,20 @@ test('Rufus gates unseen grammar; all formats unlock after the corresponding que
   assert.equal(q.target,'sextus');
  }finally{delete globalThis.document;delete globalThis.localStorage;}
 });
+
+test('Developer mode skips every main task, preserves completions after reload and turns off',()=>{
+ const nodes=new Map(),store=new Map();const node=s=>{if(!nodes.has(s))nodes.set(s,new Element());return nodes.get(s);};
+ globalThis.document={createElement:t=>new Element(t),querySelector:node,activeElement:null};globalThis.localStorage={getItem:k=>store.get(k),setItem:(k,v)=>store.set(k,v)};
+ const content=node('#dialog-content');const click=text=>{const b=content.all().find(e=>e.tag==='button'&&e.textContent===text);assert.ok(b,text);b.onclick();};
+ try{
+  const q=createQuest({pause(){},animate(){}});q.open('sextus');click('Den Auftrag annehmen');assert.ok(!content.all().some(e=>e.textContent==='Überspringen'));
+  node('#developer-mode').onclick();
+  for(let i=0;i<100&&!q.done;i++){
+   if(!q.isOpen)q.open(q.target);
+   const state=JSON.parse(store.get(SAVE_KEY));
+   if(state.stage==='done')click('Damas Nachrichten nachgehen');else click('Überspringen');
+  }
+  assert.ok(q.done);const saved=JSON.parse(store.get(SAVE_KEY));assert.equal(Object.keys(saved.developerSkipped).length,allTasks.length+1);assert.equal(restoreState(saved).stage,'messagesDone');
+  node('#developer-mode').onclick();q.open('sextus');assert.ok(!content.all().some(e=>e.textContent==='Überspringen'));
+ }finally{delete globalThis.document;delete globalThis.localStorage;}
+});

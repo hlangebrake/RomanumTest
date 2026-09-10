@@ -42,7 +42,7 @@ export function restoreRufus(raw){
  for(const t of rufusTasks){const r=raw.tasks?.[t.id];if(!r)continue;const p=progressFor(s,t);
   if(typeof r.answer===typeof p.answer&&r.answer!==null&&Array.isArray(r.answer)===Array.isArray(p.answer))p.answer=r.answer;
   p.words=Array.isArray(r.words)?[...new Set(r.words.filter(k=>(t.source||'').split(/\s+/).map(wordKey).includes(k)&&Object.hasOwn(glossary,k)))]:[];
-  for(const k of ['full','hint','example','revisedAfterExample'])p[k]=r[k]===true;p.attempts=Math.max(0,Number(r.attempts)||0);p.review=t.criteria?.map((_,i)=>r.review?.[i]===true)||[];
+  for(const k of ['full','hint','example','revisedAfterExample','developerSkipped'])p[k]=r[k]===true;p.attempts=Math.max(0,Number(r.attempts)||0);p.review=t.criteria?.map((_,i)=>r.review?.[i]===true)||[];
   p.done=r.done===true&&(t.type==='translation'?typeof p.answer==='string'&&!!p.answer.trim()&&p.example&&p.review.every(Boolean)&&p.review.length===t.criteria.length:correctRufus(t,p.answer));
  }return s;
 }

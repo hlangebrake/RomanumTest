@@ -81,3 +81,18 @@ body{position:fixed;inset:0;width:100%;height:var(--scene-height,100%);overflow:
 #dialog.keyboard-overlay{top:var(--dialog-top);bottom:auto;margin-top:0;margin-bottom:0;height:var(--dialog-height);max-height:var(--dialog-height);transform:translateY(var(--viewport-pan,0px));scroll-padding-bottom:calc(var(--keyboard-cover,0px) + 20px)}
 #dialog.keyboard-overlay::after{content:'';display:block;height:var(--keyboard-cover,0px);pointer-events:none}
 #dialog.keyboard-overlay textarea{max-height:140px;overflow-y:auto}
+#developer-mode{font-size:12px;padding:8px 12px}#developer-mode[aria-pressed=true]{background:#f1d398;color:#29382d}
+.developer-toolbar{position:sticky;top:35px;z-index:3;display:flex;gap:8px;padding:8px 0;background:#f7f2e7;margin:8px 0}
+.developer-toggle,.developer-skip{font-size:13px;min-height:44px;padding:8px 13px;background:#eee1bf;color:#344331;border:1px solid #b59b66}
+.developer-skip{font-weight:700}.developer-toolbar .developer-skip{margin-left:auto}
+@media(max-width:750px){header{flex-wrap:wrap}.actions{flex-wrap:wrap}#developer-mode{font-size:11px;padding:6px 8px}}
+/* One sticky layer owns the title and both persistent dialog controls. */
+#dialog-heading{position:sticky;top:-34px;z-index:20;background:#f7f2e7;min-height:72px;margin:-8px 0 16px;padding:10px 0;border-bottom:2px solid #c2a26b;isolation:isolate}
+#dialog-heading #quest-topic{position:static;margin:0;padding:5px 100px 8px 0;border:0;min-height:44px}
+#dialog-heading #close-dialog{top:6px;right:0;z-index:2;background:#f7f2e7}
+#dialog-heading #dialog-memory{top:6px;right:46px;z-index:2;background:#f7f2e7}
+#dialog.memory-view #dialog-heading{top:-28px}
+#dialog.memory-view #dialog-heading #quest-topic{position:static}
+@media(max-width:650px){#dialog-heading{top:-26px}}
+@media(max-height:500px){#dialog-heading{top:-25px}}
+@media(max-width:600px){#dialog.memory-view #dialog-heading{top:-20px}}

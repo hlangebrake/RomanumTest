@@ -4,10 +4,10 @@ import {assignmentBoard} from './assignment-board.js';
 import {renderMemory} from './memory-view.js';
 export function createQuest({pause,animate,restart,storage}){
  try{storage??=localStorage;}catch{storage={getItem(){return null;},setItem(){}};}
- let state=freshState(),active=null,backTo=null,returnFocus=null,speaker=null,trackRufus=false,renderedKey=null,disposeTask=()=>{};
+ let state=freshState(),active=null,backTo=null,returnFocus=null,speaker=null,developer=false,trackRufus=false,renderedKey=null,disposeTask=()=>{};
  try{state=restoreState(JSON.parse(storage.getItem(SAVE_KEY)));}catch{}
  const dialog=document.querySelector('#dialog'),content=document.querySelector('#dialog-content');
- const rufus=createRufus({content,body,unlock,close,available:t=>t.requiredQuest?chapterDone(t.requiredQuest):true});
+ const rufus=createRufus({content,body,unlock,close,developer:()=>developer,available:t=>t.requiredQuest?chapterDone(t.requiredQuest):true});
  function chapter(){if(['messages','messagesDone'].includes(state.stage))return quests.find(q=>q.id===messageTasks[state.messageIndex].chapter);const id=['intro','warmup'].includes(state.stage)?'q1':state.stage==='learn'?taskNow().chapter:'q5';return quests.find(q=>q.id===id);}
  function chapterDone(id){return allTasks.filter(t=>t.chapter===id).every(t=>state.solved[t.id])&&(id!=='q5'||['done','messages','messagesDone'].includes(state.stage));}
  function owner(){if(state.stage==='messages')return taskNow().person;if(state.stage==='messagesDone')return 'sextus';return ['intro','warmup','report','done'].includes(state.stage)?'sextus':state.stage==='evidence'?'livia':taskNow().person;}
@@ -19,7 +19,27 @@ export function createQuest({pause,animate,restart,storage}){
  function memoryNotice(){if(trackRufus)document.querySelector('#objective-text').textContent='Hilf Rufus mit den losen Tafeln';const notice=document.querySelector('#memory-notice'),fresh=state.unreadMemory;notice.hidden=!fresh.length||active==='memory';document.querySelector('#memory').classList.toggle('has-new-memory',!!fresh.length);document.querySelector('#dialog-memory').classList.toggle('has-new-memory',!!fresh.length);document.querySelector('#memory-new-title').textContent=fresh.map(id=>memoryCards[id].title).join(' · ');}
  function el(tag,text,cls){const e=document.createElement(tag);if(text)e.textContent=text;if(cls)e.className=cls;return e;}
  function button(text,fn,cls='primary'){const b=el('button',text,cls);b.type='button';b.onclick=fn;return b;}
- function body(kicker,title,text){dialog.classList.toggle('memory-view',active==='memory');disposeTask();disposeTask=()=>{};content.replaceChildren();content.append(el('p',kicker,'eyebrow'),el('h2',title));if(text)content.append(el('p',text,'dialog-copy'));dialog.scrollTop=0;memoryNotice();showTopic();}
+ function body(kicker,title,text){dialog.classList.toggle('memory-view',active==='memory');disposeTask();disposeTask=()=>{};content.replaceChildren();content.append(el('p',kicker,'eyebrow'),el('h2',title));if(text)content.append(el('p',text,'dialog-copy'));dialog.scrollTop=0;memoryNotice();showTopic();developerTools();}
+
+ function toggleDeveloper(){developer=!developer;const b=document.querySelector('#developer-mode');b?.setAttribute('aria-pressed',String(developer));if(b)b.textContent=developer?'Developer · An':'Developer';if(dialog.open)render();}
+ function developerTools(){
+  if(!developer)return;
+  const bar=el('div',null,'developer-toolbar');bar.append(button('Developer · An',toggleDeveloper,'developer-toggle'));
+  if(active===owner()&&['warmup','learn','witness','report','messages','evidence'].includes(state.stage))bar.append(button('Überspringen',skipTask,'developer-skip'));
+  content.append(bar);
+ }
+ function skipTask(){
+  if(!developer||active!==owner())return;
+  if(state.stage==='evidence'){state.claims=claims.map(q=>q.answer);state.developerSkipped.evidence=true;state.stage='report';save();close();return;}
+  if(!['warmup','learn','witness','report','messages'].includes(state.stage))return;
+  const t=state.stage==='report'?finalWriting:taskNow();
+  state.developerSkipped[t.id]=true;
+  if(t.type==='writing'){state.answers[t.id]=t.model;state.revealed[t.id]=true;state.review[t.id]=t.criteria.map(()=>true);}
+  else if(t.type==='reflection')state.answers[t.id]='Wer hat die Übergabe beobachtet?';
+  else if(t.answer!==undefined)state.answers[t.id]=JSON.parse(JSON.stringify(t.answer));
+  if(t.cards)unlock(t.cards);
+  advance(t);
+ }
  function open(person){renderedKey=null;returnFocus=document.activeElement;active=person;speaker=person;backTo=null;pause(true,person);animate(person,'talk');render();if(!dialog.open)dialog.showModal();document.querySelector('#close-dialog').focus({preventScroll:true});}
  function close(){disposeTask();rufus.dispose();dialog.close();pause(false);animate(speaker,'idle');speaker=null;active=null;backTo=null;returnFocus?.focus({preventScroll:true});}
  function memory(){rufus.dispose();if(active==='memory')return;backTo=active;active='memory';render();}
@@ -139,6 +159,7 @@ export function createQuest({pause,animate,restart,storage}){
   }
  }
  document.querySelector('#memory-notice-open').onclick=memory;document.querySelector('#memory-notice-dismiss').onclick=()=>{state.unreadMemory=[];save();};document.querySelector('#dialog-memory').onclick=memory;document.querySelector('#close-dialog').onclick=close;dialog.addEventListener('cancel',e=>{e.preventDefault();close();});
+ const developerButton=document.querySelector('#developer-mode');if(developerButton)developerButton.onclick=toggleDeveloper;
  document.querySelector('#journal').onclick=()=>open('journal');document.querySelector('#memory').onclick=()=>open('memory');update();
  return {open,startOver(){trackRufus=false;open('journal');renderRestart();},get target(){return trackRufus?'rufus':owner();},get done(){return !trackRufus&&state.stage==='messagesDone';},get isOpen(){return dialog.open;}};
 }
