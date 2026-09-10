@@ -4,7 +4,7 @@ import {assignmentBoard} from './assignment-board.js';
 import {renderMemory} from './memory-view.js';
 export function createQuest({pause,animate,restart,storage}){
  try{storage??=localStorage;}catch{storage={getItem(){return null;},setItem(){}};}
- let state=freshState(),active=null,backTo=null,returnFocus=null,speaker=null,trackRufus=false,disposeTask=()=>{};
+ let state=freshState(),active=null,backTo=null,returnFocus=null,speaker=null,trackRufus=false,renderedKey=null,disposeTask=()=>{};
  try{state=restoreState(JSON.parse(storage.getItem(SAVE_KEY)));}catch{}
  const dialog=document.querySelector('#dialog'),content=document.querySelector('#dialog-content');
  const rufus=createRufus({content,body,unlock,close,available:t=>t.requiredQuest?chapterDone(t.requiredQuest):true});
@@ -20,8 +20,8 @@ export function createQuest({pause,animate,restart,storage}){
  function el(tag,text,cls){const e=document.createElement(tag);if(text)e.textContent=text;if(cls)e.className=cls;return e;}
  function button(text,fn,cls='primary'){const b=el('button',text,cls);b.type='button';b.onclick=fn;return b;}
  function body(kicker,title,text){dialog.classList.toggle('memory-view',active==='memory');disposeTask();disposeTask=()=>{};content.replaceChildren();content.append(el('p',kicker,'eyebrow'),el('h2',title));if(text)content.append(el('p',text,'dialog-copy'));dialog.scrollTop=0;memoryNotice();showTopic();}
- function open(person){returnFocus=document.activeElement;active=person;speaker=person;backTo=null;pause(true,person);animate(person,'talk');render();if(!dialog.open)dialog.showModal();document.querySelector('#close-dialog').focus();}
- function close(){disposeTask();rufus.dispose();dialog.close();pause(false);animate(speaker,'idle');speaker=null;active=null;backTo=null;returnFocus?.focus();}
+ function open(person){renderedKey=null;returnFocus=document.activeElement;active=person;speaker=person;backTo=null;pause(true,person);animate(person,'talk');render();if(!dialog.open)dialog.showModal();document.querySelector('#close-dialog').focus({preventScroll:true});}
+ function close(){disposeTask();rufus.dispose();dialog.close();pause(false);animate(speaker,'idle');speaker=null;active=null;backTo=null;returnFocus?.focus({preventScroll:true});}
  function memory(){rufus.dispose();if(active==='memory')return;backTo=active;active='memory';render();}
  function source(label,text,translation,parent=content){const box=el('section',null,'quest-source');box.append(el('span',label,'source-label'));const latin=el('p',text,'source-latin');latin.lang='la';box.append(latin);if(translation){const d=el('details');d.append(el('summary','Bedeutung nachsehen'),el('p',translation));box.append(d);}parent.append(box);}
  function card(id,parent=content){const data=memoryCards[id],box=el('section',null,'memory-card');box.append(el('h3',data.title));if(data.source)source(data.sourceLabel,data.source,data.text,box);else box.append(el('p',data.text));if(data.example)box.append(el('p',data.example,'latin-example'));if(data.table){const wrap=el('div',null,'table-scroll'),table=el('table');data.table.forEach((row,i)=>{const tr=el('tr');row.forEach(x=>tr.append(el(i?'td':'th',x)));table.append(tr);});wrap.append(table);const fold=el('details');fold.append(el('summary','Formen nachschlagen'),wrap);box.append(fold);}parent.append(box);}
@@ -87,6 +87,14 @@ export function createQuest({pause,animate,restart,storage}){
  }
  function renderRestart(){body('NEUER ANFANG','Zurück zum ersten Gespräch?','Deine Antworten, Notizen und Erinnerungen an diese Lieferung werden zurückgesetzt.');content.append(button('Von vorne beginnen',()=>{animate(speaker,'idle');state=freshState();save();restart?.();active='sextus';speaker='sextus';pause(true,'sextus');animate('sextus','talk');render();}),button('Zurück',()=>render(),'secondary'));}
  function render(){
+  const key=[active,state.stage,state.warmupIndex,state.index,state.witnessIndex,state.messageIndex].join(':');
+  const keep=key===renderedKey,y=dialog.scrollTop;
+  const folds=keep?[...content.querySelectorAll('details')].map(e=>e.open):[];
+  renderContent();
+  if(keep){content.querySelectorAll('details').forEach((e,i)=>{if(folds[i]!==undefined)e.open=folds[i];});dialog.scrollTop=y;}
+  renderedKey=key;
+ }
+ function renderContent(){
   if(active==='rufus'){animate('rufus','idle');rufus.render();return;}
   if(active==='memory'){
    body('DEIN GEDÄCHTNIS','Wissen & Spuren',state.memory.length?null:'Sprich mit Sextus, um deinen Auftrag zu erfahren.');

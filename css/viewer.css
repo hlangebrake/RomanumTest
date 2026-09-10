@@ -73,3 +73,11 @@
 #dialog .text-marking .choice{display:inline-block;width:auto;min-height:44px;margin:3px 2px;padding:5px 9px;font:21px/1.4 Georgia,serif;border:1px solid #c9c8b8;border-radius:7px;background:transparent;color:#29382e}
 #dialog .text-marking .choice[aria-pressed=true]{background:#d9e6cf;border-color:#526d44;box-shadow:inset 0 -3px #526d44}
 #dialog .text-marking .choice:disabled{opacity:1}
+/* The document never scrolls. Only dialog content and text fields do. */
+html{position:fixed;inset:0;overflow:hidden;height:100%;overscroll-behavior:none}
+body{position:fixed;inset:0;width:100%;height:var(--scene-height,100%);overflow:hidden;overscroll-behavior:none;transform:translateY(var(--viewport-pan,0px))}
+#world{position:absolute;inset:0;height:var(--scene-height,100%)}
+#dialog{overflow-anchor:none;overscroll-behavior:none}
+#dialog.keyboard-overlay{top:var(--dialog-top);bottom:auto;margin-top:0;margin-bottom:0;height:var(--dialog-height);max-height:var(--dialog-height);transform:translateY(var(--viewport-pan,0px));scroll-padding-bottom:calc(var(--keyboard-cover,0px) + 20px)}
+#dialog.keyboard-overlay::after{content:'';display:block;height:var(--keyboard-cover,0px);pointer-events:none}
+#dialog.keyboard-overlay textarea{max-height:140px;overflow-y:auto}

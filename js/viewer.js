@@ -5,6 +5,8 @@ import {loadBakedLighting,setupLighting} from './lighting.js';
 import {createSurroundings} from './surroundings.js';
 import {populate} from './people.js';
 import {createQuest} from './quest.js';
+import {installViewport} from './viewport.js';
+const viewport=installViewport();
 
 const world=document.querySelector('#world'), loading=document.querySelector('#loading');
 const progress=document.querySelector('#progress'),resetButton=document.querySelector('#reset');
@@ -57,7 +59,7 @@ document.addEventListener('visibilitychange',()=>{releaseAll();last=0;});
 world.addEventListener('pointerdown',e=>{if(!ready||paused||drag)return;drag={id:e.pointerId,x:e.clientX,y:e.clientY};world.setPointerCapture(e.pointerId);});
 world.addEventListener('pointermove',e=>{if(drag?.id!==e.pointerId)return;yaw-=(e.clientX-drag.x)*.004;pitch-=(e.clientY-drag.y)*.004;pitch=Math.max(-1.35,Math.min(1.35,pitch));drag.x=e.clientX;drag.y=e.clientY;});
 for(const type of ['pointerup','pointercancel','lostpointercapture'])world.addEventListener(type,()=>drag=null);
-addEventListener('resize',()=>{releaseAll();camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
+addEventListener('resize',()=>{releaseAll();requestAnimationFrame(()=>{const {width,height}=viewport.size;camera.aspect=width/height;camera.updateProjectionMatrix();renderer.setSize(width,height);});});
 renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();ready=false;releaseAll();fail('Die 3D-Ansicht wurde unterbrochen. Bitte erneut laden.');});
 function fail(message){loading.hidden=false;progress.textContent=message;loading.querySelector('strong').textContent='Ansicht nicht verfügbar';document.querySelector('.loader').hidden=true;document.querySelector('#retry').hidden=false;}
 async function start(){
@@ -114,6 +116,5 @@ function frame(now){
 }
 requestAnimationFrame(frame);start();
 
-function fitKeyboard(){document.documentElement.style.setProperty('--usable-height',`${window.visualViewport?.height||innerHeight}px`);}
-window.visualViewport?.addEventListener('resize',fitKeyboard);fitKeyboard();
+
 

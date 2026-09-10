@@ -30,7 +30,7 @@ test('Quest follows the full errand, returns to Sextus, announces new memories o
   if(t.type==='lesson'){const b=content.all().find(e=>e.tag==='button'&&e.className==='primary');b.onclick();return;}
   if(t.type==='reflection'){const input=content.querySelector('#reflection');input.value='Wer hat die Übergabe gesehen?';input.oninput();click('Frage im Journal festhalten');return;}
   if(['mark','multi','group'].includes(t.type)){if(t.type==='group')for(const [id,text] of t.items){click(text);click(t.slots[Number(t.answer[id])]);}else for(const value of t.answer)click(t.type==='mark'?t.tokens[Number(value)]:value);click('Abgleichen');click('Weiter');return;}
-  if(t.type==='choice'){click(t.answer);click('Abgleichen');click('Weiter');return;}
+  if(t.type==='choice'){node('#dialog').scrollTop=180;click(t.answer);assert.equal(node('#dialog').scrollTop,180,'Choice preserves reading position');click('Abgleichen');assert.equal(node('#dialog').scrollTop,180,'Feedback preserves reading position');click('Weiter');assert.equal(node('#dialog').scrollTop,0,'Next task starts at top');return;}
   const input=content.querySelector(t.type==='input'?'#answer':'#written');
   input.value=t.type==='input'?t.answer:'Meine eigene Zusammenfassung mit Quelle und Grenze.';input.oninput();
   if(t.type==='input'){click('Eintrag abgleichen');assert.ok(content.all().some(e=>e.className==='source-latin'&&e.textContent===t.source.replace('___',t.answer)));click('Weiter');}
